@@ -5,7 +5,7 @@ Plugin URI: http://weavertheme.com
 Description: Weaver II to Weaver Xtreme will convert various Weaver II and Weaver II Pro settings to Weaver Xtreme. Plugin options found on the Tools menu.
 Author: Bruce Wampler
 Author URI: http://weavertheme.com/about
-Version: 0.3
+Version: 0.4
 License: GPL
 
 Weaver II to Weaver Xtreme
@@ -18,7 +18,7 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-define ('WII2WX_VERSION','0.3');
+define ('WII2WX_VERSION','0.4');
 define ('WII2WX_MINIFY', '');
 
 function wii2wx_installed() {

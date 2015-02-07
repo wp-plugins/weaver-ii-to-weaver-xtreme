@@ -1,6 +1,6 @@
 <?php
 /*
-Aspen Themeworks - Plugic core file
+Weaver II to Weaver Xtreme - Core functions
 */
 
 //===============================================================
