@@ -25,6 +25,9 @@ Read the instructions on the Help tab.
 * Weaver II to Weaver Xtreme is Copyright (c) 2015 by Bruce E. Wampler. It is licensed under GPL Version 2.
 
 == Changelog ==
+= 1.0 =
+* Added: Weaver II Pro to Weaver Xtreme shortcode settings
+* Added: a couple of new setting conversons
 
 = 0.1 =
 

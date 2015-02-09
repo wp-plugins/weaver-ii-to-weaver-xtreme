@@ -129,9 +129,35 @@ settings to your Weaver Xtreme site. <strong>Be sure to save your existing Weave
 	}
 
 
-	wii2wx_download_link( '<strong>Save Conversion</strong> - Download converted setting to your computer',
+	wii2wx_download_link( '<strong>Save Conversion</strong> - Download converted settings to your computer',
 		$dname, $ext, $nonce, $time );
 ?>
+<h4>Convert Weaver II Pro shortcode settings to Weaver Xtreme Plus settings</h4>
+<p>Clicking the Download button below will create a <em>.wxplus</em> settings file with compatible
+Weaver II Pro settings converted for Weaver Xtreme Plus. You can then use the
+<em>Appearance &rarr; Xtreme Plus &rarr; X-Plus Save/Restore</em> tab to upload these converted settings
+to your Weaver Xtreme Plus site.
+</p>
+<?php
+	if (strpos( $fname, '.w2t') !== FALSE ) {
+		$dname = str_replace('.w2t','',$fname);
+		$ext = 'wxplus';
+	} else {
+		$dname = str_replace('.w2b','',$fname);
+		$ext = 'wxplus';
+	}
+
+
+	wii2wx_download_link( '<strong>Save Weaver II Pro Shortcode Settings Conversion</strong> - Download converted settings to your computer',
+		$dname, $ext, $nonce, $time );
+?>
+<hr />
+<h3>Convert Weaver II [weaver_xxx] Shortcodes to Weaver Xtreme equivalents</h3>
+<p>If you've used Weaver II shortcodes (e.g., [weaver_hide_if]), you will likely have the shortcodes
+scattered throughout your content. Rather than try to convert these, a new plugin called <em>Weaver Theme
+Compatibility</em> will be available soon that will automatically support the old Weaver II shortcodes.
+In fact, that plugin will allow you to use most Weaver II, and even Weaver Xtreme shortcodes, with any
+other WP theme.</p>
 	<hr />
 <?php
 	}
@@ -165,18 +191,7 @@ $set_name = '<em>Per Page/Post conversion</em>';
 if ($fname)
 	$set_name .= ' and <em>' . $fname . '</em>';
 ?>
-<h3>Convert Weaver II Pro shortcode settings to Weaver Xtreme Plus settings</h3>
-<p>This component of this converter tool is not yet complete. It is a separate process from the normal settings conversion,
-and you will be able to use it in the near future, even if you've already used the other conversions. Note
-that this is not shortcodes used in your content (see the next section), but the settings
-associated with settings for Buttons, Social, Shortcoder, etc.</p>
-<hr />
-<h3>Convert Weaver II [weaver_xxx] Shortcodes to Weaver Xtreme equivalents</h3>
-<p>If you've used Weaver II shortcodes (e.g., [weaver_hide_if]), you will likely have the shortcodes
-scattered throughout your content. Rather than try to convert these, a new plugin called <em>Weaver Theme
-Compatibility</em> will be available soon that will automatically support the old Weaver II shortcodes.
-In fact, that plugin will allow you to use most Weaver II, and even Weaver Xtreme shortcodes, with any
-other WP theme.</p>
+
 <hr />
 	<h3>Clear Current Conversion settings</h3>
 	<form id="wii2wx_form3" name="wii2wx_form3" action="<?php echo $_SERVER["REQUEST_URI"]; ?>" method="post">
@@ -253,6 +268,15 @@ function wii2wx_admin_tab2() {
 	some manual tweaking, and which are not convertible. You can run the converter more than once - it won't create
 	duplicates, but will convert any new per page/post settings you might have created while switching back
 	to Weaver II.
+</p>
+<h3>Converting Weaver II Shortcodes</h3>
+<p>A new plugin, Weaver Theme Compatibility, will be available soon on WordPress.org. This new plugin will
+support most Weaver II shortcodes for <em>any</em> theme, including Weaver Xtreme. This new plugin was
+not released at the time this version of this converter version was released.</p>
+
+<h3>More Conversion Information</h3>
+<p>There also is a fairly detailed discussion of the conversion process found <a href="//forum.weavertheme.com/discussion/11303/converting-a-weaver-ii-pro-site-to-weaver-xtreme" target="_blank" alt="Conversion Discussion">
+<strong>here</strong></a> on our forum.
 </p>
 
 	<hr />
@@ -490,12 +514,173 @@ require(dirname( __FILE__ ) . '/conversions.php'); // load the conversion defini
 
 
 
-	echo "<h4>Notes:</h4><strong>Converted settings: {$cv}. Need Manual Conversion: {$mc}. Not supported {$ns}.<br />\n";
+	echo "<h4>Notes:</h4>Converted settings: {$cv}. Need Manual Conversion: {$mc}. Not supported {$ns}.<br />\n";
 
 	echo "Other settings (mostly sidebar, mobile specific) not converted: <strong>{$nones}.</strong><br />\n";
 
-	echo "This conversion report will be included in the converted Weaver Xtreme <em>Advanced Options:Subtheme Notes</em> box.</div>\n";
+	echo "This conversion report for basic settings will be included in the converted Weaver Xtreme <em>Advanced Options:Subtheme Notes</em> box.<br /><br />\n";
 	wii2wx_setopt('wx_converted',$wii2wx_opts);
+
+
+	// ---------------------------------- Weaver II Pro to Weaver Xtreme Plus
+	/*
+	 */
+	$xp_social = array (	// social supported by Xtreme
+		'month', 'cart', 'codepen', 'digg', 'dribbble', 'dropbox', 'download', 'mail', 'facebook', 'facebook-alt' , 'feed',
+		'flickr', 'foursquare', 'github', 'googleplus', 'googleplus-alt', 'info', 'instagram', 'linkedin', 'linkedin-alt',
+		'audio', 'path_usepinterest', 'pinterest-alt', 'phone', 'image', 'pocket', 'polldaddy', 'reddit', 'skype', 'spotify',
+		'stumbleupon', 'tumblr', 'twitter', 'twitch', 'vimeo', 'wordpress', 'youtube', 'video'
+	);
+	$mapfrom = array(
+		'email', 	'picasa',	'rss',		'podcast'
+					);
+	$mapto = array (
+		'mail',		'image',	'feed',		'audio'
+
+	);
+	$social = array();
+	$not_social = array();
+
+	$xp = array();
+
+	// we have to fill in the defaults or they will get wiped when settings are uploaded
+
+	$weaverxplus_social_services = array(
+	array ('icon'=>'month', 'site'=>'# Enter URL to your calendar' , 'blurb'=>'Our calendar'),
+    array ('icon'=>'cart', 'site'=>'# Enter URL of your site\'s shopping cart' , 'blurb'=>'This site\'s Cart'),
+    array ('icon'=>'codepen', 'site'=>'codepen.io' , 'blurb'=>'Codepen: An HTML, CSS, and JavaScript code editor in your browser'),
+	array ('icon'=>'digg', 'site'=>'digg.com' , 'blurb'=>'Digg: The best news, videos and pictures on the web as voted on by the Digg community'),
+	array ('icon'=>'dribbble', 'site'=>'dribbble.com' , 'blurb'=>'Dribbble is show and tell for creatives'),
+    array ('icon'=>'dropbox', 'site'=>'dropbox.com' , 'blurb'=>'Dropbox: Your stuff, anywhere'),
+    array ('icon'=>'download', 'site'=>'# Enter URL of your site\'s download' , 'blurb'=>'This site\'s download page'),
+	array ('icon'=>'mail', 'site'=>'# E-mail link (mailto:you@example.com or url)' , 'blurb'=>'Send Email to this Site\'s Admin'),
+	array ('icon'=>'facebook', 'site'=>'facebook.com' , 'blurb'=>'Facebook: social networking'),
+    array ('icon'=>'facebook-alt', 'site'=>'facebook.com' , 'blurb'=>'Facebook: social networking'),
+	array ('icon'=>'flickr', 'site'=>'www.flickr.com' , 'blurb'=>'flickr: Share photos and video.'),
+    array ('icon'=>'feed', 'site'=>'# Enter URL of your site\'s feed' , 'blurb'=>'This site\'s RSS feed'),
+	array ('icon'=>'foursquare', 'site'=>'foursquare.com' , 'blurb'=>'Foursquare helps you find the perfect places'),
+    array ('icon'=>'github', 'site'=>'github.com' , 'blurb'=>'Github: Build software better, together.'),
+    array ('icon'=>'googleplus', 'site'=>'plus.google.com' , 'blurb'=>'Google+: Real-life sharing rethought for the web'),
+    array ('icon'=>'googleplus-alt', 'site'=>'plus.google.com' , 'blurb'=>'Google+: Real-life sharing rethought for the web'),
+	array ('icon'=>'info', 'site'=>'# Enter URL of your site\'s info' , 'blurb'=>'This site\'s info page'),
+    array ('icon'=>'instagram', 'site'=>'instagram.com' , 'blurb'=>"Instagram: Capture and Share the World's Moments"),
+	array ('icon'=>'linkedin', 'site'=>'www.linkedin.com' , 'blurb'=>'LinkedIn: Professional contact information'),
+    array ('icon'=>'linkedin-alt', 'site'=>'www.linkedin.com' , 'blurb'=>'LinkedIn: Professional contact information'),
+	array ('icon'=>'audio', 'site'=>'#Enter address of podcast' , 'blurb'=>'Listen to our podcast'),
+    array ('icon'=>'path', 'site'=>'path.com' , 'blurb'=>'Path: Quality Internet Goods'),
+    array ('icon'=>'pinterest', 'site'=>'pinterest.com' , 'blurb'=>'Pintrest: All the things that inspire you.'),
+    array ('icon'=>'pinterest-alt', 'site'=>'pinterest.com' , 'blurb'=>'Pintrest:All the things that inspire you.'),
+    array ('icon'=>'phone', 'site'=>'# Enter URL of your phone link' , 'blurb'=>'Our phone number'),
+    array ('icon'=>'image', 'site'=>'# Enter URL of your photo site' , 'blurb'=>'Our Photos'),
+    array ('icon'=>'pocket', 'site'=>'getpocket.com' , 'blurb'=>'Pocket: When you find something you want to view later.'),
+    array ('icon'=>'polldaddy', 'site'=>'polldaddy.com' , 'blurb'=>'Polldaddy: Surveys your way.'),
+	array ('icon'=>'reddit', 'site'=>'www.reddit.com' , 'blurb'=>'reddit: User-generated news links'),
+	array ('icon'=>'skype', 'site'=>'www.skype.com' , 'blurb'=>'Skype: Video and phone calling'),
+    array ('icon'=>'spotify', 'site'=>'spotify.com' , 'blurb'=>'Spotify: Music for everyone.'),
+	array ('icon'=>'stumbleupon', 'site'=>'www.stumbleupon.com' , 'blurb'=>'StumbleUpon: discover the best of the web'),
+	array ('icon'=>'tumblr', 'site'=>'www.tumblr.com' , 'blurb'=>'Tumblr: blogging'),
+	array ('icon'=>'twitter', 'site'=>'twitter.com' , 'blurb'=>'Twitter'),
+    array ('icon'=>'twitch', 'site'=>'twitch.tv' , 'blurb'=>'Twitch is the world\'s leading video platform and community for gamers'),
+	array ('icon'=>'vimeo', 'site'=>'vimeo.com' , 'blurb'=>'Vimeo: Video Sharing'),
+	array ('icon'=>'wordpress', 'site'=>'www.wordpress.org' , 'blurb'=>'WordPress: blogging'),
+	array ('icon'=>'youtube', 'site'=>'youtube.com' , 'blurb'=>'YouTube: video sharing'),
+	array ('icon'=>'video', 'site'=>'#Enter your own video link' , 'blurb'=>'Watch our video'),
+);
+	foreach ($weaverxplus_social_services as $service) {
+	   $id = $service['icon'];
+
+	    $xp['social'][$id.'_hover'] = $service['blurb'];
+	}
+
+	// $pro_opts = $wii_settings['weaverii_pro'];
+
+	foreach ($pro_opts['social'] as $sopt => $val ) {
+		if (strlen($val) > 0) {
+			$curopt = explode('_', $sopt);
+			$name = str_replace( $mapfrom, $mapto, $curopt[0]);
+			//echo "Searching: {$name} - ";
+			if ( in_array( $name,$xp_social) ) { // can convert...
+				$xp['social']["{$name}_{$curopt[1]}"] = $val;
+				if ( $curopt[1] == 'use' )	// count active options
+						$social[] = $curopt[0];
+			} else if ($curopt[1] == 'use' ) {
+				$not_social[] = $curopt[0];		// not converted
+			}
+		}
+	}
+
+	echo "<h3>Weaver II Pro Shortcode Settings</h3>\n<h4>You must use the <em>Download - Xtreme Plus Settings</em> button to save any converted Weaver II Pro shortcode settings.</h4><ul style='margin-left:2em;list-style-type:disc;'>";
+
+	if ( !empty($social) ) {
+		echo "<li>These active Weaver II Pro Social settings converted: <small>(Inactive social options may have been converted, too.)</small><br />&nbsp;&nbsp; ";
+		foreach ($social as $socname) {
+			echo "{$socname}&nbsp; ";
+		}
+		echo "</li>\n";
+	}
+	if (!empty($not_social)) {
+		echo "<li>These active Weaver II Pro Social settings with no Weaver Xtreme equivalents <strong>not</strong> converted.<br />&nbsp;&nbsp;";
+		foreach ($not_social as $not_name) {
+			echo "{$not_name}&nbsp; ";
+		}
+		echo "</li>\n";
+	}
+
+	$nbuttons = 0;
+
+	foreach ($pro_opts['buttons'] as $buttons => $button ) {
+		if ( strlen($button) > 0 ) {
+			$xp['buttons'][$buttons] = $button;
+			if ( strpos ($buttons, '_url') !== false )
+				$nbuttons++;
+		}
+	}
+	if ($nbuttons > 0)
+		echo "<li>Link Buttons converted: {$nbuttons}</li>\n";
+
+	$num_sc = 1;
+	$num_sc_conv = 0;
+
+	foreach ( $pro_opts as $option => $val) {
+		if (is_array( $val )) {
+			continue;	// skip buttons, social buttons
+		}
+		if ( strlen($val) < 1)
+			continue;
+
+		if ($option == 'wvpsc_num_opts') {
+			$xp[$option] = $val;
+			$num_sc = $val;
+		} elseif (strpos($option, 'wvpsc_') !== false) {
+			$xp[$option] = $val;
+			if (strpos($option, '_id') !== false)
+				$num_sc_conv++;
+		} elseif ( $option == 'wvr_disclaimer' ) {
+			$xp['disclaimer'] = $val;
+		} else if ($option == 'wvp_add_social_to_menu') {
+			echo "<li>Add social buttons to menu not supported in Weaver Xtreme.</li>";
+		}
+	}
+
+	if ($num_sc_conv > $num_sc) {
+		$xp['wvpsc_num_opts'] = $num_sc_conv;
+	}
+	if ($num_sc_conv > 0) {
+		echo "<li>Shortcoder definitions converted: {$num_sc_conv}</li>";
+	}
+	if ( isset($xp['wvr_disclaimer']))
+		echo "<li>Comment Policy Converted</li>";
+
+?>
+	<li>
+		<em>Note:</em> Header Gadgets, Slider Menus, and Total CSS are not supported by Weaver Xtreme so are not converted.
+		If you weren't using Weaver II Pro, then you can ignore the conversion notes for Weaver II Pro. They won't affect your site.
+	</li>
+<?php
+
+	wii2wx_setopt('wxplus_converted', $xp);
+
+	echo "</ul></div>\n";
 	return true;
 }
 
