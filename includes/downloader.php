@@ -40,18 +40,28 @@
 		wp_die(__('Headers Sent: The headers have been sent by another plugin - there may be a plugin conflict.','weaver-xtreme' /*adm*/));
 	}
 
-	$wii2wx_opts = get_option('wii2wx_settings', array());
-	//echo '<pre>'; print_r($wii2wx_opts); echo ('</pre>');
-	$weaverx_opts['weaverx_base'] = $wii2wx_opts['wx_converted'];
+	if ( $ext != 'wxplus') {
+		$wii2wx_opts = get_option('wii2wx_settings', array());
+		//echo '<pre>'; print_r($wii2wx_opts); echo ('</pre>');
+		$weaverx_opts['weaverx_base'] = $wii2wx_opts['wx_converted'];
 
 
-	if ($ext == 'wxt') {
-		$weaverx_header = 'WXT-V01.00';
+		if ($ext == 'wxt') {
+			$weaverx_header = 'WXT-V01.00';
+		} else {
+			$weaverx_header = 'WXB-V01.00';			/* Save all settings: 10 byte header */
+		}
+
+		$weaverx_settings = $weaverx_header . serialize($weaverx_opts); /* serialize full set of options right now */
 	} else {
-		$weaverx_header = 'WXB-V01.00';			/* Save all settings: 10 byte header */
-	}
+		$wii2wx_opts = get_option('wii2wx_settings', array());
+		//echo '<pre>'; print_r($wii2wx_opts); echo ('</pre>');
+		$weaverx_opts['header'] = 'WVRX-PLUS1';		// format
+		$weaverx_opts['ext'] = $ext;				// the extension
+		$weaverx_opts['weaverxplus'] = $wii2wx_opts['wxplus_converted'];
 
-	$weaverx_settings = $weaverx_header . serialize($weaverx_opts); /* serialize full set of options right now */
+		$weaverx_settings = serialize($weaverx_opts); /* serialize full set of options right now */
+	}
 	/* $bom = pack("CCC", 0xef, 0xbb, 0xbf);
 	if (0 === strncmp($weaverx_settings, $bom, 3)) {
         $weaverx_settings = substr($weaverx_settings, 3);
